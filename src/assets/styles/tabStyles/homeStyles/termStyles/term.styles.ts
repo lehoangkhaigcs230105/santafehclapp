@@ -1,0 +1,146 @@
+import { StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f4f6fb",
+  },
+  scroll: {
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  form: {
+    width: "100%",
+    maxWidth: 620,
+    alignSelf: "center",
+    gap: 18,
+    paddingBottom: 32,
+  },
+  heroCard: {
+    backgroundColor: "#eef3ff",
+    borderRadius: 22,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#d9e3fa",
+  },
+  stepBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#2c4678",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 12,
+  },
+  stepBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#173153",
+    marginBottom: 8,
+  },
+  helperText: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#5a6a80",
+  },
+  formCard: {
+    backgroundColor: "#fff",
+    borderRadius: 22,
+    padding: 20,
+    shadowColor: "#142a46",
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
+  },
+  label: {
+    fontSize: 14,
+    color: "#55667e",
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  signatureCard: {
+    minHeight: 132,
+    backgroundColor: "#f8fbff",
+    borderColor: "#cfdae9",
+    borderWidth: 1,
+    borderRadius: 18,
+    marginVertical: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  signatureText: {
+    fontSize: 18,
+    color: "#304863",
+    fontWeight: "600",
+  },
+  signatureHint: {
+    marginTop: 6,
+    fontSize: 12,
+    color: "#7e8ea1",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  smallField: {
+    flex: 1,
+  },
+  uploadBox: {
+    minHeight: 88,
+    backgroundColor: "#f8fbff",
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+    marginTop: 4,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#cad7e8",
+    paddingHorizontal: 16,
+  },
+  uploadText: {
+    color: "#314b69",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  uploadHint: {
+    marginTop: 6,
+    color: "#8092a8",
+    fontSize: 12,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 12,
+    marginTop: 8,
+  },
+  secondaryButton: {
+    backgroundColor: "#eef3fb",
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 24,
+    flex: 1,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#d3ddec",
+  },
+  secondaryButtonText: {
+    color: "#29415d",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  primaryButtonWrap: {
+    flex: 1,
+  },
+});
+
+export default styles;
