@@ -17,7 +17,6 @@ export const registerWithFirebase = async (
   const normalizedPhoneNumber = profile.phoneNumber.trim();
   const normalizedDriverLicense = profile.driverLicense.trim().toUpperCase();
 
-  // 1️⃣ Create Firebase Auth account
   const userCredential = await createUserWithEmailAndPassword(
     firebaseAuth,
     normalizedEmail,
@@ -26,7 +25,6 @@ export const registerWithFirebase = async (
 
   const uid = userCredential.user.uid;
 
-  // 2️⃣ Save user profile to Firestore
   await setDoc(doc(firestore, "users", uid), {
     firstName: normalizedFirstName,
     lastName: normalizedLastName,
@@ -42,9 +40,13 @@ export const registerWithFirebase = async (
     city: profile.city?.trim() ?? "",
     note: profile.note?.trim() ?? "",
     role: RoleEnum.user,
+    userRole: RoleEnum.user,
+    roles: [RoleEnum.user],
+    accountType: RoleEnum.user,
     allowedForms: [],
     parentAdminId: null,
     status: "active",
+    isSubAccount: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });

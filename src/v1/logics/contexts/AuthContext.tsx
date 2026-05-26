@@ -45,6 +45,10 @@ export type AuthUserProfile = {
   role?: RoleEnum;
   state?: string;
   status?: string;
+  userRole?: RoleEnum;
+  roles?: RoleEnum[];
+  accountType?: RoleEnum;
+  isSubAccount?: boolean;
   [key: string]: unknown;
 };
 
@@ -60,6 +64,16 @@ type AuthContextType = {
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
+
+const getProfileRole = (data: Record<string, unknown>): RoleEnum => {
+  return (
+    normalizeRole(data.role) ??
+    normalizeRole(data.userRole) ??
+    normalizeRole(data.roles) ??
+    normalizeRole(data.accountType) ??
+    RoleEnum.user
+  );
+};
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(null);
@@ -140,7 +154,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
         if (snap.exists()) {
           const data = snap.data();
-          const userRole = normalizeRole(data.role) ?? RoleEnum.user;
+          const userRole = getProfileRole(data);
 
           setRole(userRole);
           setProfile({
@@ -151,9 +165,13 @@ export default function AuthProvider({ children }: PropsWithChildren) {
           setRole(RoleEnum.user);
           setProfile({
             role: RoleEnum.user,
+            userRole: RoleEnum.user,
+            roles: [RoleEnum.user],
+            accountType: RoleEnum.user,
             allowedForms: [],
             parentAdminId: null,
             status: "active",
+            isSubAccount: false,
           });
         }
       } finally {

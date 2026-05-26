@@ -29,6 +29,12 @@ export const createSubAccountWithPermissions = async ({
   allowedForms,
   parentAdminId,
 }: CreateSubAccountDTO): Promise<string> => {
+  const normalizedFirstName = firstName.trim();
+  const normalizedLastName = lastName.trim();
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedPhoneNumber = phoneNumber?.trim() ?? "";
+  const normalizedAllowedForms = Array.from(new Set(allowedForms));
+
   const secondaryApp = initializeApp(
     firebaseConfig,
     `sub-account-${Date.now()}`
@@ -38,22 +44,26 @@ export const createSubAccountWithPermissions = async ({
   try {
     const userCredential = await createUserWithEmailAndPassword(
       secondaryAuth,
-      email.trim(),
+      normalizedEmail,
       password
     );
     const uid = userCredential.user.uid;
 
     await setDoc(doc(firestore, "users", uid), {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      fullName: `${firstName.trim()} ${lastName.trim()}`.trim(),
-      email: email.trim().toLowerCase(),
-      phoneNumber: phoneNumber?.trim() ?? "",
+      firstName: normalizedFirstName,
+      lastName: normalizedLastName,
+      fullName: `${normalizedFirstName} ${normalizedLastName}`.trim(),
+      email: normalizedEmail,
+      phoneNumber: normalizedPhoneNumber,
       driverLicense: "",
       role: RoleEnum.subAdmin,
-      allowedForms,
+      userRole: RoleEnum.subAdmin,
+      roles: [RoleEnum.subAdmin],
+      accountType: RoleEnum.subAdmin,
+      allowedForms: normalizedAllowedForms,
       parentAdminId,
       status: "active",
+      isSubAccount: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });

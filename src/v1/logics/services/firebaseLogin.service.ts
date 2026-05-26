@@ -41,6 +41,16 @@ const getEmailByDriverLicense = async (driverLicense: string) => {
   return email;
 };
 
+const getRoleFromProfile = (profile: Record<string, unknown>): RoleEnum => {
+  return (
+    normalizeRole(profile.role) ??
+    normalizeRole(profile.userRole) ??
+    normalizeRole(profile.roles) ??
+    normalizeRole(profile.accountType) ??
+    RoleEnum.user
+  );
+};
+
 export const loginWithFirebase = async (
   loginName: string,
   password: string
@@ -63,7 +73,7 @@ export const loginWithFirebase = async (
   }
 
   const profile = userDoc.data();
-  const role = normalizeRole(profile.role) ?? RoleEnum.user;
+  const role = getRoleFromProfile(profile);
 
   return {
     uid: user.uid,
