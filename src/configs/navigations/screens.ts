@@ -58,6 +58,7 @@ export const StackScreens = {
   adminHome: "admins/adminHomeScreen",
   adminProfileCheck: "admins/adminProfileCheckScreen",
   adminCreateSubAccount: "admins/adminCreateSubAccountScreen",
+  subAdminHome: "subAdminHomeScreen",
 };
 
 export const Screens = {

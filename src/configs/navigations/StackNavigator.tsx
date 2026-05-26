@@ -15,6 +15,7 @@ import SmsLayout from "@/v1/UI/layouts/auths/smsLayout";
 import AdminHomeLayout from "@/v1/UI/layouts/insides/admin/adminHomeLayout";
 import AdminProfileCheckLayout from "@/v1/UI/layouts/insides/admin/adminProfilecheckLayout";
 import AdminCreateSubAccountLayout from "@/v1/UI/layouts/insides/admin/adminCreateSubAccountLayout";
+import SubAdminHomeLayout from "@/v1/UI/layouts/insides/subAdmin/subAdminHomeLayout";
 
 import HomeLayout from "@/v1/UI/layouts/insides/homes/homeLayout";
 import EmployerLayout from "@/v1/UI/layouts/insides/homes/employers/employerLayout";
@@ -179,6 +180,7 @@ const renderCommonAppScreens = (canAccessForm: CanAccessForm) => (
 export default function StackNavigator() {
   const authState = useContext(AuthContext);
   const isAdmin = authState?.role === RoleEnum.admin;
+  const isSubAdmin = authState?.role === RoleEnum.subAdmin;
   const allowedForms = getAllowedForms(authState?.profile?.allowedForms);
   const canAccessForm = (formId: FormPermissionId) =>
     authState?.role !== RoleEnum.subAdmin || allowedForms.includes(formId);
@@ -201,6 +203,15 @@ export default function StackNavigator() {
         <Stack.Screen name={StackScreens.adminHome} component={AdminHomeLayout} />
         <Stack.Screen name={StackScreens.adminProfileCheck} component={AdminProfileCheckLayout} />
         <Stack.Screen name={StackScreens.adminCreateSubAccount} component={AdminCreateSubAccountLayout} />
+        {renderCommonAppScreens(canAccessForm)}
+      </Stack.Navigator>
+    );
+  }
+
+  if (isSubAdmin) {
+    return (
+      <Stack.Navigator key="sub-admin" id="RootStack" screenOptions={{ headerShown: false }} initialRouteName={StackScreens.subAdminHome}>
+        <Stack.Screen name={StackScreens.subAdminHome} component={SubAdminHomeLayout} />
         {renderCommonAppScreens(canAccessForm)}
       </Stack.Navigator>
     );
