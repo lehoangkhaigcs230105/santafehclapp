@@ -1,68 +1,190 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    padding: 24,
-    paddingBottom: 32,
-    position: 'relative', // 🔥 QUAN TRỌNG
+    backgroundColor: "#eef5f3",
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 32,
-    textAlign: 'center',
-    color: '#222',
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 28,
   },
-
+  heroSection: {
+    backgroundColor: "#174d52",
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 26,
+    shadowColor: "#16353a",
+    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 16 },
+    shadowRadius: 28,
+    elevation: 8,
+  },
+  heroTopRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    zIndex: 10,
+  },
+  brandBadge: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  brandBadgeText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+  },
   languageButton: {
-    position: 'absolute',
-    top: 40,
-    right: 16,
-    zIndex: 999,      // 🔥 FIX CLICK
-    elevation: 10,    // 🔥 ANDROID
+    alignItems: "flex-end",
+    position: "relative",
   },
-
-  languageButtonAfterClick: {
-    position: 'absolute',
-    top: 40,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+  languageTrigger: {
+    alignItems: "center",
+    backgroundColor: "#f3fbf9",
+    borderRadius: 999,
+    flexDirection: "row",
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  languageTriggerText: {
+    color: "#174d52",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  languageDropdown: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    marginTop: 10,
+    minWidth: 180,
+    paddingVertical: 8,
+    shadowColor: "#0f2c2f",
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 24,
     elevation: 10,
-    padding: 8,
-    minWidth: 140,
-    zIndex: 1000,     // 🔥 cao hơn icon
   },
-
   languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
-
   languageText: {
+    color: "#234a4e",
     fontSize: 14,
-    color: '#222',
+    fontWeight: "600",
   },
-
-  changeScreen: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  languageTextActive: {
+    color: "#174d52",
+    fontWeight: "800",
   },
-
-  signupText: {
-    color: '#888',
+  eyebrow: {
+    color: "#a8d8d0",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0.8,
+    marginTop: 22,
+    textTransform: "uppercase",
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 31,
+    fontWeight: "900",
+    lineHeight: 38,
+    marginTop: 10,
+    maxWidth: 320,
+  },
+  subtitle: {
+    color: "#d6e8e5",
     fontSize: 14,
+    lineHeight: 21,
+    marginTop: 12,
+    maxWidth: 340,
   },
-
-  forgotPassText: {
-    color: '#888',
+  formCard: {
+    backgroundColor: "#ffffff",
+    borderColor: "#dbe8e6",
+    borderRadius: 24,
+    borderWidth: 1,
+    marginTop: -18,
+    paddingHorizontal: 18,
+    paddingTop: 22,
+    paddingBottom: 14,
+    shadowColor: "#103033",
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 24,
+    elevation: 4,
+  },
+  formHeader: {
+    marginBottom: 8,
+  },
+  formTitle: {
+    color: "#173d42",
+    fontSize: 24,
+    fontWeight: "900",
+  },
+  formHint: {
+    color: "#6b8083",
+    fontSize: 13,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  linkRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 14,
+    marginTop: -2,
+  },
+  linkPrimary: {
+    color: "#174d52",
     fontSize: 14,
+    fontWeight: "700",
+  },
+  linkSecondary: {
+    color: "#6f8083",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  submitButton: {
+    backgroundColor: "#174d52",
+    borderRadius: 18,
+    marginBottom: 10,
+    marginTop: 8,
+    paddingVertical: 15,
+  },
+  loader: {
+    marginVertical: 18,
+  },
+  infoRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 6,
+  },
+  infoChip: {
+    alignItems: "center",
+    backgroundColor: "#eef7f5",
+    borderRadius: 999,
+    flexDirection: "row",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  infoChipText: {
+    color: "#174d52",
+    fontSize: 12,
+    fontWeight: "700",
   },
 });
 
