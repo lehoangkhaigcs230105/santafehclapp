@@ -4,7 +4,7 @@ import {
   getAuth,
   signOut,
 } from "firebase/auth";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { FormPermissionId } from "@/configs/formPermissions";
 import { RoleEnum } from "@/configs/enums/roleEnum";
@@ -40,6 +40,7 @@ export const createSubAccountWithPermissions = async ({
     `sub-account-${Date.now()}`
   );
   const secondaryAuth = getAuth(secondaryApp);
+  const secondaryFirestore = getFirestore(secondaryApp);
 
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -49,7 +50,7 @@ export const createSubAccountWithPermissions = async ({
     );
     const uid = userCredential.user.uid;
 
-    await setDoc(doc(firestore, "users", uid), {
+    const subAccountProfile = {
       firstName: normalizedFirstName,
       lastName: normalizedLastName,
       fullName: `${normalizedFirstName} ${normalizedLastName}`.trim(),
@@ -66,7 +67,17 @@ export const createSubAccountWithPermissions = async ({
       isSubAccount: true,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-    });
+    };
+
+    try {
+      await setDoc(doc(firestore, "users", uid), subAccountProfile);
+    } catch (error: any) {
+      if (error?.code !== "permission-denied") {
+        throw error;
+      }
+
+      await setDoc(doc(secondaryFirestore, "users", uid), subAccountProfile);
+    }
 
     await signOut(secondaryAuth);
 

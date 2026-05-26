@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -85,7 +84,7 @@ const SubAdminHomeLayout = (): React.JSX.Element | null => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
@@ -163,7 +162,7 @@ const SubAdminHomeLayout = (): React.JSX.Element | null => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

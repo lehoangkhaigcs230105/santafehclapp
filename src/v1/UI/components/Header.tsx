@@ -1,30 +1,59 @@
 import { Feather, Ionicons } from '@expo/vector-icons'
-import React from 'react'
+import React, { useContext } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { CommonActions, useNavigation } from '@react-navigation/native'
+import { RoleEnum } from '@/configs/enums/roleEnum'
+import { StackScreens } from '@/configs/navigations/screens'
+import { AuthContext } from '@/v1/logics/contexts/AuthContext'
 import { windowWidth } from '../../logics/utils/Dimensions'
 
 interface HeaderTabsProps {
   title: string
   showBack?: boolean
   rightAction?: () => void
+  fallbackRoute?: string
 }
 
 export default function HeaderTabs({
   title,
   showBack = false,
   rightAction,
+  fallbackRoute = StackScreens.home,
 }: HeaderTabsProps) {
 
   const navigation = useNavigation<any>()
+  const authState = useContext(AuthContext)
+
+  const resolveFallbackRoute = () => {
+    if (!authState?.user) return StackScreens.login
+    if (fallbackRoute !== StackScreens.home) return fallbackRoute
+    if (authState.role === RoleEnum.admin) return StackScreens.adminHome
+    if (authState.role === RoleEnum.subAdmin) return StackScreens.subAdminHome
+    return StackScreens.home
+  }
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack()
+      return
+    }
+
+    const targetNavigation = navigation.getParent?.() ?? navigation
+
+    targetNavigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: resolveFallbackRoute() }],
+      })
+    )
+  }
 
   return (
     <View style={styles.wrapper}>
 
-      {/* 🔥 BACK BUTTON (FLOATING) */}
       {showBack && (
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={handleBack}
           style={styles.backButton}
           hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}
         >
@@ -32,7 +61,6 @@ export default function HeaderTabs({
         </TouchableOpacity>
       )}
 
-      {/* 🔥 HEADER */}
       <View style={styles.headerContainer}>
         <Text style={styles.textHeader}>{title}</Text>
 
@@ -66,10 +94,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  /* 🔥 BACK BUTTON RIÊNG */
   backButton: {
     position: 'absolute',
-    top: 35,      // 👉 chỉnh lên/xuống tùy UI
+    top: 35,
     left: 16,
     zIndex: 9999,
     elevation: 50,

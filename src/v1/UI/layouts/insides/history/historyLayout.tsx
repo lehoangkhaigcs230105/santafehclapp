@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const historyData = [
   { companyName: "Name Company 1", status: "Pending" },
@@ -19,7 +19,7 @@ const historyData = [
 const HistoryLayout = (): React.ReactElement => {
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollview}>
 
         {/* Header */}
@@ -48,7 +48,7 @@ const HistoryLayout = (): React.ReactElement => {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

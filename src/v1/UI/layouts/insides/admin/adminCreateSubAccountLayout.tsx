@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import React, { useContext, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -51,6 +51,22 @@ const AdminCreateSubAccountLayout = () => {
       current.includes(formId)
         ? current.filter((item) => item !== formId)
         : [...current, formId]
+    );
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    const targetNavigation = navigation.getParent?.() ?? navigation;
+
+    targetNavigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: StackScreens.adminHome }],
+      })
     );
   };
 
@@ -108,7 +124,7 @@ const AdminCreateSubAccountLayout = () => {
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={handleBack}
             style={styles.iconButton}
           >
             <Ionicons name="arrow-back" size={22} color="#ffffff" />

@@ -4,7 +4,6 @@ import React, { useContext } from "react";
 import {
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Text,
@@ -60,7 +59,7 @@ const AdminHomeLayout = (): React.JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" />
 
       <View style={styles.header}>
@@ -165,7 +164,7 @@ const AdminHomeLayout = (): React.JSX.Element => {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

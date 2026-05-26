@@ -1,10 +1,9 @@
 import styles from "src/assets/styles/tabStyles/adminStyles/adminProfileCheck.Styles";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
   FlatList,
-  SafeAreaView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -24,6 +23,22 @@ const HistoryCard = ({ item, onPress }: { item: any; onPress: () => void }) => (
 
 const AdminProfileCheckLayout: React.FC = () => {
   const navigation = useNavigation<any>();
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+
+    const targetNavigation = navigation.getParent?.() ?? navigation;
+
+    targetNavigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: StackScreens.adminHome }],
+      })
+    );
+  };
 
   const historyData = [
     {
@@ -53,9 +68,9 @@ const AdminProfileCheckLayout: React.FC = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Feather name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
         <Text style={styles.headerText}>History</Text>
@@ -78,7 +93,7 @@ const AdminProfileCheckLayout: React.FC = () => {
         keyExtractor={(_, index) => `card-${index}`}
         renderItem={({ item }) => <HistoryCard item={item} onPress={item.onPress} />}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

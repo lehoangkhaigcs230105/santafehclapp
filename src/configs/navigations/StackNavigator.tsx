@@ -201,6 +201,7 @@ export default function StackNavigator() {
     return (
       <Stack.Navigator key="admin" id="RootStack" screenOptions={{ headerShown: false }} initialRouteName={StackScreens.adminHome}>
         <Stack.Screen name={StackScreens.adminHome} component={AdminHomeLayout} />
+        <Stack.Screen name={StackScreens.home} component={AdminHomeLayout} />
         <Stack.Screen name={StackScreens.adminProfileCheck} component={AdminProfileCheckLayout} />
         <Stack.Screen name={StackScreens.adminCreateSubAccount} component={AdminCreateSubAccountLayout} />
         {renderCommonAppScreens(canAccessForm)}
@@ -212,6 +213,7 @@ export default function StackNavigator() {
     return (
       <Stack.Navigator key="sub-admin" id="RootStack" screenOptions={{ headerShown: false }} initialRouteName={StackScreens.subAdminHome}>
         <Stack.Screen name={StackScreens.subAdminHome} component={SubAdminHomeLayout} />
+        <Stack.Screen name={StackScreens.home} component={SubAdminHomeLayout} />
         {renderCommonAppScreens(canAccessForm)}
       </Stack.Navigator>
     );
