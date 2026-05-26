@@ -7,9 +7,9 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#174d52",
-    paddingBottom: 26,
+    paddingBottom: 40,
     paddingHorizontal: 20,
-    paddingTop: 14,
+    paddingTop: 30,
   },
   headerTop: {
     alignItems: "center",
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "800",
-    marginTop: 24,
+    marginTop: 32,
   },
   welcomeSubText: {
     color: "#d5e8e6",
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: "row",
     gap: 10,
-    marginTop: -30,
+    marginTop: -36,
   },
   summaryCard: {
     borderRadius: 8,

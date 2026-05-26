@@ -22,12 +22,13 @@ const AdminHomeLayout = (): React.JSX.Element => {
   const authState = useContext(AuthContext);
   const navigation = useNavigation<any>();
 
-  const adminName =
-    authState?.profile?.fullName ||
-    `${authState?.profile?.firstName ?? ""} ${
-      authState?.profile?.lastName ?? ""
-    }`.trim() ||
-    "Clinic Admin";
+  const fallbackName = [
+    authState?.profile?.firstName,
+    authState?.profile?.lastName,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const adminName = authState?.profile?.fullName || fallbackName || "Clinic Admin";
 
   const signOut = () => {
     Alert.alert("Confirm logout", "Are you sure you want to log out?", [
@@ -78,78 +79,92 @@ const AdminHomeLayout = (): React.JSX.Element => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.welcomeText}>Good day, {adminName}</Text>
-        <Text style={styles.welcomeSubText}>
-          Manage clinic workflows, staff permissions, and patient form intake.
-        </Text>
+        <View style={styles.welcomeBlock}>
+          <View style={styles.roleBadge}>
+            <Ionicons name="shield-checkmark-outline" size={14} color="#dff8f3" />
+            <Text style={styles.roleBadgeText}>Main admin</Text>
+          </View>
+          <Text style={styles.welcomeText}>Good day, {adminName}</Text>
+          <Text style={styles.welcomeSubText}>
+            Manage staff permissions, review submissions, and open clinic forms.
+          </Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.actionRow}>
-          <TouchableOpacity
-            activeOpacity={0.88}
-            onPress={goToCreateSubAccount}
-            style={[styles.primaryAction, styles.actionCard]}
-          >
-            <View style={styles.actionIcon}>
-              <Ionicons name="person-add-outline" size={22} color="#ffffff" />
-            </View>
-            <View style={styles.actionTextWrap}>
-              <Text style={styles.primaryActionTitle}>Create sub account</Text>
-              <Text style={styles.primaryActionText}>
-                Assign exact form access to staff
-              </Text>
-            </View>
-          </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={goToCreateSubAccount}
+          style={styles.primaryAction}
+        >
+          <View style={styles.primaryActionIcon}>
+            <Ionicons name="person-add-outline" size={24} color="#ffffff" />
+          </View>
+          <View style={styles.primaryActionBody}>
+            <Text style={styles.primaryActionTitle}>Create sub account</Text>
+            <Text style={styles.primaryActionText}>
+              Add staff and choose exactly which forms they can use.
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={22} color="#ffffff" />
+        </TouchableOpacity>
 
+        <View style={styles.shortcutRow}>
           <TouchableOpacity
             activeOpacity={0.88}
             onPress={goToProfileReview}
-            style={[styles.secondaryAction, styles.actionCard]}
+            style={styles.shortcutButton}
           >
-            <View style={styles.secondaryActionIcon}>
+            <View style={styles.shortcutIconReview}>
               <MaterialCommunityIcons
                 name="clipboard-search-outline"
                 size={22}
                 color="#1d5f66"
               />
             </View>
-            <View style={styles.actionTextWrap}>
-              <Text style={styles.secondaryActionTitle}>Profile review</Text>
-              <Text style={styles.secondaryActionText}>
-                Review submitted patient records
-              </Text>
+            <Text style={styles.shortcutTitle}>Profile review</Text>
+            <Text style={styles.shortcutText}>Check patient records</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.88}
+            onPress={goToProfile}
+            style={styles.shortcutButton}
+          >
+            <View style={styles.shortcutIconProfile}>
+              <Ionicons name="person-circle-outline" size={23} color="#7a4a12" />
             </View>
+            <Text style={styles.shortcutTitle}>My profile</Text>
+            <Text style={styles.shortcutText}>Account information</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.statsRow}>
-          <View style={[styles.statCard, styles.statCardBlue]}>
+          <View style={styles.statCard}>
             <Text style={styles.statValue}>{CLINIC_FORM_PERMISSIONS.length}</Text>
-            <Text style={styles.statLabel}>Clinic forms</Text>
+            <Text style={styles.statLabel}>Available forms</Text>
           </View>
-          <View style={[styles.statCard, styles.statCardGreen]}>
-            <Text style={styles.statValue}>Role</Text>
-            <Text style={styles.statLabel}>Admin access</Text>
-          </View>
-          <View style={[styles.statCard, styles.statCardCoral]}>
+          <View style={styles.statCard}>
             <Text style={styles.statValue}>Live</Text>
-            <Text style={styles.statLabel}>Form control</Text>
+            <Text style={styles.statLabel}>Permission control</Text>
           </View>
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Clinic workflows</Text>
-          <Text style={styles.sectionHint}>Tap to open a form</Text>
+          <View>
+            <Text style={styles.sectionTitle}>Clinic workflows</Text>
+            <Text style={styles.sectionSubtitle}>Open any form as admin</Text>
+          </View>
+          <Text style={styles.sectionCount}>{CLINIC_FORM_PERMISSIONS.length}</Text>
         </View>
 
-        <View style={styles.formGrid}>
+        <View style={styles.formList}>
           {CLINIC_FORM_PERMISSIONS.map((form) => (
             <TouchableOpacity
               activeOpacity={0.86}
               key={form.id}
               onPress={() => goToForm(form.routeName, form.params)}
-              style={styles.formCard}
+              style={styles.formRow}
             >
               <View style={styles.formIconWrap}>
                 <Image
@@ -158,8 +173,11 @@ const AdminHomeLayout = (): React.JSX.Element => {
                   style={styles.formIcon}
                 />
               </View>
-              <Text style={styles.formTitle}>{form.label}</Text>
-              <Text style={styles.formDescription}>{form.description}</Text>
+              <View style={styles.formTextWrap}>
+                <Text style={styles.formTitle}>{form.label}</Text>
+                <Text style={styles.formDescription}>{form.description}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#789093" />
             </TouchableOpacity>
           ))}
         </View>
