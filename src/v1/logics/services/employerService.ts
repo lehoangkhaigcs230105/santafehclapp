@@ -8,6 +8,9 @@ import {
 } from "firebase/firestore";
 import { db, firebaseAuth } from "../../../../firebase/firebaseConfig";
 
+export const normalizeEmployerCode = (employerCode: string) =>
+  employerCode.trim().toUpperCase();
+
 export const createEmployer = async (data: {
   companyName: string;
   employerCode: string;
@@ -18,39 +21,45 @@ export const createEmployer = async (data: {
 
   return await addDoc(collection(db, "employers"), {
     userId: user.uid,
-    companyName: data.companyName,
-    employerCode: data.employerCode,
+    companyName: data.companyName.trim(),
+    employerCode: normalizeEmployerCode(data.employerCode),
     createdAt: serverTimestamp(),
   });
 };
 
-export const getEmployerByEmployerCode = async (employerCode: string) => {
-  const normalizedEmployerCode = employerCode.trim();
-
-  if (!normalizedEmployerCode) {
-    return null;
-  }
-
-  const employerQuery = query(
-    collection(db, "employers"),
-    where("employerCode", "==", normalizedEmployerCode)
+const findEmployerByField = async (field: string, value: string) => {
+  const snapshot = await getDocs(
+    query(collection(db, "employers"), where(field, "==", value))
   );
-
-  const snapshot = await getDocs(employerQuery);
 
   if (!snapshot.empty) {
     return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
   }
 
-  const fallbackQuery = query(
-    collection(db, "employers"),
-    where("code", "==", normalizedEmployerCode)
+  return null;
+};
+
+export const getEmployerByEmployerCode = async (employerCode: string) => {
+  const trimmedCode = employerCode.trim();
+
+  if (!trimmedCode) {
+    return null;
+  }
+
+  const normalizedCode = normalizeEmployerCode(trimmedCode);
+
+  const candidates = [trimmedCode, normalizedCode].filter(
+    (value, index, array) => array.indexOf(value) === index
   );
 
-  const fallbackSnapshot = await getDocs(fallbackQuery);
+  for (const candidate of candidates) {
+    const directMatch = await findEmployerByField("employerCode", candidate);
+    if (directMatch) return directMatch;
+  }
 
-  if (!fallbackSnapshot.empty) {
-    return { id: fallbackSnapshot.docs[0].id, ...fallbackSnapshot.docs[0].data() };
+  for (const candidate of candidates) {
+    const fallbackMatch = await findEmployerByField("code", candidate);
+    if (fallbackMatch) return fallbackMatch;
   }
 
   return null;

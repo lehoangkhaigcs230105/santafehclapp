@@ -3,14 +3,14 @@ import styles from "src/assets/styles/tabStyles/homeStyles/randomStyles/randomSt
 import * as DocumentPicker from "expo-document-picker";
 
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -19,10 +19,15 @@ import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
 import { StackScreens } from "@/configs/navigations/screens";
+import {
+  getEmployerByEmployerCode,
+  normalizeEmployerCode,
+} from "@/v1/logics/services/employerService";
+import { getDriverPrefillData } from "@/v1/logics/services/prefillService";
 
-/* TYPE */
 type RouteParams = {
-  company: string;
+  company?: string;
+  companyCode?: string;
 };
 
 type PickedFileType = {
@@ -34,16 +39,16 @@ type PickedFileType = {
 
 const RandomStepTwoLayout = () => {
   const route = useRoute();
-  const { company } = route.params as RouteParams;
+  const { company = "", companyCode: routeCompanyCode = "" } =
+    (route.params as RouteParams) ?? {};
 
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
 
   const [driverLicense, setDriverLicense] = useState("");
-  const [today, setToday] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
-  const [companyCode, setCompanyCode] = useState("");
+  const [today, setToday] = useState(() => new Date().toISOString().slice(0, 10));
+  const [companyName, setCompanyName] = useState(company);
+  const [companyCode, setCompanyCode] = useState(routeCompanyCode);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [actualAlt, setActualAlt] = useState("");
@@ -51,22 +56,108 @@ const RandomStepTwoLayout = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [collectionDate, setCollectionDate] = useState("");
   const [pickedFile, setPickedFile] = useState<PickedFileType | null>(null);
+  const [statusText, setStatusText] = useState(
+    "We will prefill driver and company data from Firebase where available."
+  );
+  const [statusTone, setStatusTone] = useState<"neutral" | "success" | "warning">("neutral");
+
+  useEffect(() => {
+    let active = true;
+
+    const loadPrefill = async () => {
+      try {
+        const prefill = await getDriverPrefillData();
+        if (!active || !prefill) return;
+
+        setDriverLicense((current) => current || prefill.driverLicenseNumber || prefill.license);
+        setFirstName((current) => current || prefill.driverFirstName);
+        setLastName((current) => current || prefill.driverLastName);
+        setCompanyName((current) => current || company || prefill.companyName);
+        setCompanyCode((current) =>
+          current || routeCompanyCode || prefill.employerCode || ""
+        );
+
+        setStatusText(
+          prefill.employerCode || prefill.driverFirstName
+            ? "Driver and employer data were prefilled from your account."
+            : "Enter the remaining details to complete this random form."
+        );
+        setStatusTone(prefill.employerCode || prefill.driverFirstName ? "success" : "neutral");
+      } catch (error) {
+        console.error("Random step 2 prefill error:", error);
+      }
+    };
+
+    loadPrefill();
+
+    return () => {
+      active = false;
+    };
+  }, [company, routeCompanyCode]);
+
+  useEffect(() => {
+    const normalizedCode = normalizeEmployerCode(companyCode || "");
+
+    if (!normalizedCode) {
+      if (companyName) {
+        setStatusText("Company selected. Review the details below before submitting.");
+        setStatusTone("neutral");
+      }
+      return;
+    }
+
+    let active = true;
+    const timeout = setTimeout(async () => {
+      try {
+        const employerData: any = await getEmployerByEmployerCode(normalizedCode);
+
+        if (!active) return;
+
+        if (employerData) {
+          setCompanyName((current) => current || employerData.companyName || company);
+          setStatusText(`Employer code ${normalizedCode} matched successfully.`);
+          setStatusTone("success");
+        } else {
+          setStatusText(
+            `No employer match found for code ${normalizedCode}. You can still submit manually.`
+          );
+          setStatusTone("warning");
+        }
+      } catch (error) {
+        console.error("Random step 2 employer lookup error:", error);
+        if (active) {
+          setStatusText("We could not verify that company code right now.");
+          setStatusTone("warning");
+        }
+      }
+    }, 250);
+
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [company, companyCode, companyName]);
 
   const pickFile = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "application/pdf",
-      copyToCacheDirectory: true,
-    });
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true,
+      });
 
-    if (result.canceled) return;
+      if (result.canceled) return;
 
-    const file = result.assets[0];
-    setPickedFile({
-      uri: file.uri,
-      name: file.name,
-      type: file.mimeType,
-      size: file.size,
-    });
+      const file = result.assets[0];
+      setPickedFile({
+        uri: file.uri,
+        name: file.name,
+        type: file.mimeType,
+        size: file.size,
+      });
+    } catch (error) {
+      console.error("Random form file pick error:", error);
+      Alert.alert("Error", "Unable to pick a PDF file right now.");
+    }
   };
 
   const submitForm = async () => {
@@ -78,6 +169,7 @@ const RandomStepTwoLayout = () => {
     }
 
     if (
+      !companyName.trim() ||
       !driverLicense.trim() ||
       !companyCode.trim() ||
       !firstName.trim() ||
@@ -90,20 +182,18 @@ const RandomStepTwoLayout = () => {
     try {
       const docRef = await addDoc(collection(db, "randomForms"), {
         userId: user.uid,
-        companyName: company,
-        driverLicense: driverLicense.trim(),
+        companyName: companyName.trim(),
+        driverLicense: driverLicense.trim().toUpperCase(),
         todayDate: today.trim(),
-        companyCode: companyCode.trim(),
+        companyCode: normalizeEmployerCode(companyCode),
         driverFirstName: firstName.trim(),
         driverLastName: lastName.trim(),
         actualAlternative: actualAlt.trim(),
         expireDate: expireDate.trim(),
         selectedDate: selectedDate.trim(),
         collectionDate: collectionDate.trim(),
-
         fileName: pickedFile?.name || null,
         fileUri: pickedFile?.uri || null,
-
         createdAt: serverTimestamp(),
       });
 
@@ -134,14 +224,28 @@ const RandomStepTwoLayout = () => {
             <Text style={styles.helperText}>
               Complete the driver and collection details for the selected company before submitting the form.
             </Text>
-            <View style={styles.companyPill}>
-              <Text style={styles.companyPillText}>{company}</Text>
-            </View>
+            {!!companyName && (
+              <View style={styles.companyPill}>
+                <Text style={styles.companyPillText}>{companyName}</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.formCard}>
-            <Text style={styles.label}>{t("random_status")}</Text>
+            <View
+              style={[
+                styles.statusCard,
+                statusTone === "success"
+                  ? styles.statusCardSuccess
+                  : statusTone === "warning"
+                    ? styles.statusCardWarning
+                    : null,
+              ]}
+            >
+              <Text style={styles.statusText}>{statusText}</Text>
+            </View>
 
+            <Text style={styles.label}>{t("random_status")}</Text>
             <FormInput value={t("random_testing")} editable={false} />
 
             <FormInput
@@ -151,13 +255,13 @@ const RandomStepTwoLayout = () => {
               autoCapitalize="characters"
             />
 
-            <FormInput
-              placeholder={t("today")}
-              value={today}
-              onChangeText={setToday}
-            />
+            <FormInput placeholder={t("today")} value={today} onChangeText={setToday} />
 
-            <FormInput value={company} editable={false} />
+            <FormInput
+              placeholder={t("company_name")}
+              value={companyName}
+              onChangeText={setCompanyName}
+            />
 
             <FormInput
               placeholder={t("company_code")}
@@ -203,7 +307,6 @@ const RandomStepTwoLayout = () => {
             />
 
             <Text style={styles.label}>{t("attachment")}</Text>
-
             <TouchableOpacity onPress={pickFile} style={styles.uploadBox}>
               <Text style={styles.uploadText}>
                 {pickedFile ? pickedFile.name : t("pick_pdf_file_optional")}

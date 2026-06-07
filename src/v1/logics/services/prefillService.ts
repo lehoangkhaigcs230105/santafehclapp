@@ -1,5 +1,6 @@
 import { doc, getDoc } from "firebase/firestore";
 import { db, firebaseAuth } from "../../../../firebase/firebaseConfig";
+import { normalizeEmployerCode } from "./employerService";
 
 type LooseRecord = Record<string, any>;
 
@@ -69,6 +70,7 @@ export const getDriverPrefillData = async (): Promise<DriverPrefillData | null> 
   );
 
   const { firstName, lastName } = splitFullName(fallbackName);
+  const employerCode = pickValue(registerData.employerCode, userData.employerCode);
 
   return {
     driverFirstName: pickValue(
@@ -125,7 +127,7 @@ export const getDriverPrefillData = async (): Promise<DriverPrefillData | null> 
       registerData.license,
       registerData.driverLicenseNumber
     ),
-    employerCode: pickValue(registerData.employerCode, userData.employerCode),
-    companyName: pickValue(registerData.companyName, userData.company),
+    employerCode: employerCode ? normalizeEmployerCode(employerCode) : "",
+    companyName: pickValue(registerData.companyName, userData.companyName, userData.company),
   };
 };

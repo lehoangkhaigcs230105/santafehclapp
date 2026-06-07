@@ -58,6 +58,29 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 4,
   },
+  statusCard: {
+    backgroundColor: "#f5faf7",
+    borderWidth: 1,
+    borderColor: "#d8e7de",
+    borderRadius: 16,
+    marginBottom: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  statusCardSuccess: {
+    backgroundColor: "#edf8f1",
+    borderColor: "#cbe4d2",
+  },
+  statusCardWarning: {
+    backgroundColor: "#fff7ec",
+    borderColor: "#efd6b4",
+  },
+  statusText: {
+    color: "#49675a",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -71,6 +71,29 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 8 },
     elevation: 4,
   },
+  statusCard: {
+    backgroundColor: "#f6f8fd",
+    borderWidth: 1,
+    borderColor: "#d9e3f4",
+    borderRadius: 16,
+    marginBottom: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  statusCardSuccess: {
+    backgroundColor: "#edf8f1",
+    borderColor: "#cbe4d2",
+  },
+  statusCardWarning: {
+    backgroundColor: "#fff7ec",
+    borderColor: "#efd6b4",
+  },
+  statusText: {
+    color: "#4f6079",
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: "600",
+  },
   label: {
     fontSize: 14,
     color: "#55667e",
