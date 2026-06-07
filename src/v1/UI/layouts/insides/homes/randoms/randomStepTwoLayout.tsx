@@ -20,6 +20,7 @@ import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
 import { StackScreens } from "@/configs/navigations/screens";
 import {
+  getEmployerByCompanyName,
   getEmployerByEmployerCode,
   normalizeEmployerCode,
 } from "@/v1/logics/services/employerService";
@@ -98,35 +99,51 @@ const RandomStepTwoLayout = () => {
   useEffect(() => {
     const normalizedCode = normalizeEmployerCode(companyCode || "");
 
-    if (!normalizedCode) {
-      if (companyName) {
-        setStatusText("Company selected. Review the details below before submitting.");
-        setStatusTone("neutral");
-      }
+    if (!normalizedCode && !companyName.trim()) {
       return;
     }
 
     let active = true;
     const timeout = setTimeout(async () => {
       try {
-        const employerData: any = await getEmployerByEmployerCode(normalizedCode);
+        let employerData: any = null;
+
+        if (normalizedCode) {
+          employerData = await getEmployerByEmployerCode(normalizedCode);
+        }
+
+        if (!employerData && companyName.trim()) {
+          employerData = await getEmployerByCompanyName(companyName);
+        }
 
         if (!active) return;
 
         if (employerData) {
           setCompanyName((current) => current || employerData.companyName || company);
-          setStatusText(`Employer code ${normalizedCode} matched successfully.`);
+          setCompanyCode((current) =>
+            current || employerData.employerCode || employerData.code || ""
+          );
+          setStatusText(
+            employerData.employerCode || employerData.code
+              ? `Company details loaded from Firebase. Code: ${normalizeEmployerCode(String(employerData.employerCode || employerData.code))}`
+              : "Company details loaded from Firebase."
+          );
           setStatusTone("success");
-        } else {
+        } else if (normalizedCode) {
           setStatusText(
             `No employer match found for code ${normalizedCode}. You can still submit manually.`
+          );
+          setStatusTone("warning");
+        } else {
+          setStatusText(
+            "This company does not have a code in the companies collection yet. Add companyCode there or employerCode in employers to auto-fill it."
           );
           setStatusTone("warning");
         }
       } catch (error) {
         console.error("Random step 2 employer lookup error:", error);
         if (active) {
-          setStatusText("We could not verify that company code right now.");
+          setStatusText("We could not verify that company information right now.");
           setStatusTone("warning");
         }
       }

@@ -11,6 +11,9 @@ import { db, firebaseAuth } from "../../../../firebase/firebaseConfig";
 export const normalizeEmployerCode = (employerCode: string) =>
   employerCode.trim().toUpperCase();
 
+const normalizeCompanyName = (companyName: string) =>
+  companyName.trim().replace(/\s+/g, " ");
+
 export const createEmployer = async (data: {
   companyName: string;
   employerCode: string;
@@ -21,7 +24,7 @@ export const createEmployer = async (data: {
 
   return await addDoc(collection(db, "employers"), {
     userId: user.uid,
-    companyName: data.companyName.trim(),
+    companyName: normalizeCompanyName(data.companyName),
     employerCode: normalizeEmployerCode(data.employerCode),
     createdAt: serverTimestamp(),
   });
@@ -61,6 +64,22 @@ export const getEmployerByEmployerCode = async (employerCode: string) => {
     const fallbackMatch = await findEmployerByField("code", candidate);
     if (fallbackMatch) return fallbackMatch;
   }
+
+  return null;
+};
+
+export const getEmployerByCompanyName = async (companyName: string) => {
+  const normalizedName = normalizeCompanyName(companyName);
+
+  if (!normalizedName) {
+    return null;
+  }
+
+  const directMatch = await findEmployerByField("companyName", normalizedName);
+  if (directMatch) return directMatch;
+
+  const fallbackMatch = await findEmployerByField("name", normalizedName);
+  if (fallbackMatch) return fallbackMatch;
 
   return null;
 };

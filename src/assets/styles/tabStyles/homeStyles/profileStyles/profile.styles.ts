@@ -1,132 +1,190 @@
 import { StyleSheet } from "react-native";
 
- const styles = StyleSheet.create({
- container: {
-    backgroundColor: "#fff",
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#eef5f3",
     flex: 1,
   },
-  cardWrapper: {
-  paddingBottom: 16,
-  backgroundColor: '#f5f5f5',
-},
-  scroll: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 40,
-    backgroundColor: "#fff",
-    minHeight: "100%",
+  centeredState: {
+    alignItems: "center",
+    justifyContent: "center",
   },
-  greeting: {
-    fontSize: 22,
-    color: "#222",
-    fontWeight: "400",
-    marginBottom: 0,
+  scroll: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 40,
+    gap: 16,
+  },
+  heroCard: {
+    backgroundColor: "#174d52",
+    borderRadius: 24,
+    padding: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    shadowColor: "#12383c",
+    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 14 },
+    shadowRadius: 24,
+    elevation: 7,
+  },
+  avatarCircle: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: "rgba(255,255,255,0.14)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    color: "#ffffff",
+    fontSize: 26,
+    fontWeight: "900",
+  },
+  heroTextWrap: {
+    flex: 1,
+  },
+  eyebrow: {
+    color: "#a8d8d0",
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
   },
   name: {
-    fontSize: 28,
-    color: "#222",
-    fontWeight: "300",
-    marginTop: 2,
-    marginBottom: 8,
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "900",
+    marginTop: 6,
   },
-  separator: {
-    height: 10,
+  subText: {
+    color: "#d8ebe8",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  roleBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  roleBadgeText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "capitalize",
+  },
+  contactCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: "#dce9e7",
+    padding: 18,
+    gap: 14,
   },
   contactRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 18,
+    alignItems: "center",
+    gap: 12,
   },
-  email: {
-    color: "#888",
-    fontSize: 15,
+  contactText: {
+    color: "#234448",
+    fontSize: 14,
+    fontWeight: "600",
     flex: 1,
   },
-  phone: {
-    color: "#888",
-    fontSize: 15,
-    flex: 1,
-    textAlign: "right",
-  },
-  card: {
-  backgroundColor: "#fff",
-  borderRadius: 8,
-  padding: 12,
-  marginVertical: 16,
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.1,
-  shadowRadius: 2,
-  elevation: 2,
-},
-sectionGroupText: {
-  fontSize: 16,
-  color: "#444",
-  fontWeight: "400",
-  marginVertical: 6,
-  marginHorizontal: 8,
-},
-
-row: {
+  sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 16,
+    alignItems: "flex-end",
+    marginTop: 4,
   },
-
-underlinedBox: {
-  borderBottomWidth: 1,
-  borderColor: "#e0e0e0",
-  paddingBottom: 2,
-  marginVertical: 6,
-
-  width: "auto",
-  alignItems: "center",
-},
-
-  line: {
-    height: 1,
-    backgroundColor: "#e0e0e0",
-    marginVertical: 2,
-    width: "100%",
+  sectionTitle: {
+    color: "#173d42",
+    fontSize: 20,
+    fontWeight: "900",
   },
-pairText: {
-  fontSize: 16,
-  color: "#333",
-  fontWeight: "400",
-  textAlign: "center",
-},
-  address: {
+  sectionHint: {
+    color: "#6f8588",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  infoGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  infoCard: {
+    width: "48%",
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#dce9e7",
+    padding: 16,
+    minHeight: 132,
+  },
+  infoIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#edf7f5",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  infoLabel: {
+    color: "#6d8285",
+    fontSize: 12,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+  infoValue: {
+    color: "#1d4044",
+    fontSize: 16,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+  sectionCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: "#dce9e7",
+    padding: 18,
+  },
+  sectionCardTitle: {
+    color: "#173d42",
+    fontSize: 16,
+    fontWeight: "900",
+    marginBottom: 8,
+  },
+  sectionCardValue: {
+    color: "#304f53",
     fontSize: 15,
-    color: "#444",
-    fontWeight: "400",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 8,
-    marginRight: 8,
+    lineHeight: 22,
   },
-  note: {
-    fontSize: 15,
-    color: "#444",
-    fontWeight: "400",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 8,
-    marginRight: 8,
+  sectionCardMeta: {
+    color: "#72878a",
+    fontSize: 13,
+    marginTop: 8,
+    fontWeight: "600",
   },
-
- 
-changePassBtn: {
-  marginTop: 24,
-  backgroundColor: '#1976d2',
-  paddingVertical: 12,
-  borderRadius: 8,
-  alignItems: 'center',
-},
-changePassText: {
-  color: '#fff',
-  fontSize: 16,
-  fontWeight: 'bold',
-}
+  changePassBtn: {
+    marginTop: 10,
+    marginBottom: 12,
+    backgroundColor: "#174d52",
+    paddingVertical: 15,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
+  changePassText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "800",
+  },
 });
 
-export default styles;  
+export default styles;
