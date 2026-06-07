@@ -1,21 +1,41 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
+      ],
+      "src/*": [
+        "./src/*"
+      ],
+      "firebase/*": [
+        "./firebase/*"
       ]
     },
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "strict": false,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "ignoreDeprecations": "5.0"
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": [
+      "react",
+      "react-native"
+    ]
   },
   "include": [
     "app",
     "src",
+    "firebase",
+    "index.ts",
+    "index.tsx",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js"
   ]
 }
