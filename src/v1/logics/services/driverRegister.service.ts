@@ -44,25 +44,57 @@ const getCurrentUid = () => {
   return user.uid;
 };
 
+const syncUserProfile = async (
+  uid: string,
+  data: Record<string, unknown>,
+  includeCreatedAt = false
+) => {
+  await setDoc(
+    doc(db, "users", uid),
+    {
+      ...data,
+      updatedAt: serverTimestamp(),
+      ...(includeCreatedAt ? { createdAt: serverTimestamp() } : {}),
+    },
+    { merge: true }
+  );
+};
+
 export const createDriverRegisterStepOne = async (
   data: DriverRegisterStepOneData
 ) => {
   const uid = getCurrentUid();
   const normalizedEmployerCode = data.employerCode.trim();
+  const normalizedLicense = data.license.trim();
+  const normalizedStatus = data.status.trim();
+  const normalizedPlan = data.plan.trim();
 
   await setDoc(
     doc(db, "driverregister", uid),
     {
       userId: uid,
-      status: data.status.trim(),
-      plan: data.plan.trim(),
+      status: normalizedStatus,
+      plan: normalizedPlan,
       employerCode: normalizedEmployerCode,
-      license: data.license.trim(),
+      license: normalizedLicense,
       stepOneCompleted: true,
       updatedAt: serverTimestamp(),
       createdAt: serverTimestamp(),
     },
     { merge: true }
+  );
+
+  await syncUserProfile(
+    uid,
+    {
+      status: normalizedStatus,
+      plan: normalizedPlan,
+      employerCode: normalizedEmployerCode,
+      license: normalizedLicense,
+      driverLicense: normalizedLicense,
+      registerStepOneCompleted: true,
+    },
+    true
   );
 };
 
@@ -78,27 +110,68 @@ export const updateDriverRegisterStepTwo = async (
   data: DriverRegisterStepTwoData
 ) => {
   const uid = getCurrentUid();
+  const normalizedData = {
+    code: data.code.trim(),
+    companyName: data.companyName.trim(),
+    driverPhone: data.driverPhone.trim(),
+    companyCity: data.companyCity.trim(),
+    companyAddress: data.companyAddress.trim(),
+    companyEmail: data.companyEmail.trim(),
+    companyState: data.companyState.trim(),
+    companyZip: data.companyZip.trim(),
+    usdot: data.usdot.trim(),
+    mcNumber: data.mcNumber.trim(),
+    derFirstName: data.derFirstName.trim(),
+    derLastName: data.derLastName.trim(),
+    dateOfEnrollment: data.dateOfEnrollment.trim(),
+    dateOfExpiration: data.dateOfExpiration.trim(),
+  };
 
   await setDoc(
     doc(db, "driverregister", uid),
     {
-      ...data,
+      ...normalizedData,
       stepTwoCompleted: true,
       updatedAt: serverTimestamp(),
     },
     { merge: true }
   );
+
+  await syncUserProfile(uid, {
+    employerCode: normalizedData.code,
+    companyName: normalizedData.companyName,
+    company: normalizedData.companyName,
+    phoneNumber: normalizedData.driverPhone,
+    companyCity: normalizedData.companyCity,
+    companyAddress: normalizedData.companyAddress,
+    companyEmail: normalizedData.companyEmail,
+    companyState: normalizedData.companyState,
+    companyZip: normalizedData.companyZip,
+    usdot: normalizedData.usdot,
+    mcNumber: normalizedData.mcNumber,
+    derFirstName: normalizedData.derFirstName,
+    derLastName: normalizedData.derLastName,
+    dateOfEnrollment: normalizedData.dateOfEnrollment,
+    dateOfExpiration: normalizedData.dateOfExpiration,
+    registerStepTwoCompleted: true,
+  });
 };
 
 export const completeDriverRegister = async (
   data: DriverRegisterFinalData
 ) => {
   const uid = getCurrentUid();
+  const normalizedData = {
+    witness: data.witness.trim(),
+    signDate: data.signDate.trim(),
+    clinicSignatureOptional: data.clinicSignatureOptional.trim(),
+    completed: data.completed,
+  };
 
   await setDoc(
     doc(db, "driverregister", uid),
     {
-      ...data,
+      ...normalizedData,
       stepFinalCompleted: true,
       completed: true,
       submittedAt: serverTimestamp(),
@@ -106,6 +179,14 @@ export const completeDriverRegister = async (
     },
     { merge: true }
   );
+
+  await syncUserProfile(uid, {
+    witness: normalizedData.witness,
+    signDate: normalizedData.signDate,
+    clinicSignatureOptional: normalizedData.clinicSignatureOptional,
+    registerCompleted: true,
+    registerSubmittedAt: serverTimestamp(),
+  });
 };
 
 export const getEmployerByEmployerCode = async (employerCode: string) => {

@@ -2,6 +2,7 @@ import styles from "../../../../assets/styles/authStyles/login.style";
 import { AuthContext } from "../../../logics/contexts/AuthContext";
 import { showAlert } from "../../../logics/services/AlertService";
 import {
+  applySavedLanguage,
   getAppLanguage,
   setAppLanguage,
 } from "../../../logics/services/LanguageService";
@@ -104,7 +105,7 @@ const LoginLayout: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const lang = await getAppLanguage();
+      const lang = await applySavedLanguage();
       setSelectedLang(lang);
     })();
   }, []);
