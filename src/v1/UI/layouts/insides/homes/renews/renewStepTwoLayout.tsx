@@ -13,6 +13,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 import {
@@ -40,6 +43,7 @@ const RenewStepTwoLayout = () => {
   const [derLastName, setDerLastName] = useState("");
   const [dateOfEnrollment, setDateOfEnrollment] = useState("");
   const [dateOfExpiration, setDateOfExpiration] = useState("");
+  const [supportingFile, setSupportingFile] = useState<SelectedUploadFile | null>(null);
   const [lookupStatus, setLookupStatus] = useState(
     "Paste the employer code to auto-fill the company details from Firebase."
   );
@@ -223,10 +227,13 @@ const RenewStepTwoLayout = () => {
             />
 
             <Text style={styles.label}>{t("file_upload_optional")}</Text>
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("upload_photo")}</Text>
-              <Text style={styles.uploadHint}>Upload renewal attachment if needed</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Upload renewal attachment if needed"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={supportingFile}
+              onChange={setSupportingFile}
+            />
 
             <ButtonForm onPress={pushToRenewStepThree} text={t("next")} />
           </View>

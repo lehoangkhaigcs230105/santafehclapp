@@ -13,6 +13,9 @@ import { useNavigation } from "@react-navigation/native";
 import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 
@@ -22,6 +25,9 @@ const RenewFinalStepLayout = () => {
   const [witness, setWitness] = useState("");
   const [signDate, setSignDate] = useState("");
   const [clinicSignatureOptional, setClinicSignatureOptional] = useState("");
+  const [initialsFile, setInitialsFile] = useState<SelectedUploadFile | null>(null);
+  const [memberSignatureFile, setMemberSignatureFile] = useState<SelectedUploadFile | null>(null);
+  const [clinicSignatureFile, setClinicSignatureFile] = useState<SelectedUploadFile | null>(null);
 
   const pushToHomeScreen = () => {
     if (!witness.trim() || !signDate.trim()) {
@@ -50,18 +56,22 @@ const RenewFinalStepLayout = () => {
 
           <View style={styles.formCard}>
             <Text style={styles.label}>{t('initial_read_sections')}</Text>
-
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t('upload_photo')}</Text>
-              <Text style={styles.uploadHint}>Add initials or acknowledgement</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Add initials or acknowledgement"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={initialsFile}
+              onChange={setInitialsFile}
+            />
 
             <Text style={styles.label}>{t('member_signature')}</Text>
-
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t('upload_photo')}</Text>
-              <Text style={styles.uploadHint}>Upload the member signature</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Upload the member signature"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={memberSignatureFile}
+              onChange={setMemberSignatureFile}
+            />
 
             <FormInput placeholder={t('witness')} value={witness} onChangeText={setWitness} />
             <FormInput placeholder={t('sign_date')} value={signDate} onChangeText={setSignDate} />
@@ -71,10 +81,13 @@ const RenewFinalStepLayout = () => {
               onChangeText={setClinicSignatureOptional}
             />
 
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t('upload_photo')}</Text>
-              <Text style={styles.uploadHint}>Clinic signature if needed</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Clinic signature if needed"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={clinicSignatureFile}
+              onChange={setClinicSignatureFile}
+            />
 
             <ButtonForm onPress={pushToHomeScreen} text={t('submit')} />
           </View>

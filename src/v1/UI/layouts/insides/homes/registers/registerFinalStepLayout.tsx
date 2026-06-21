@@ -13,6 +13,9 @@ import { useNavigation } from "@react-navigation/native";
 import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 import { completeDriverRegister } from "@/v1/logics/services/driverRegister.service";
@@ -24,6 +27,9 @@ const RegisterFinalStepLayout = () => {
   const [witness, setWitness] = useState("");
   const [signDate, setSignDate] = useState("");
   const [clinicSignatureOptional, setClinicSignatureOptional] = useState("");
+  const [initialsFile, setInitialsFile] = useState<SelectedUploadFile | null>(null);
+  const [memberSignatureFile, setMemberSignatureFile] = useState<SelectedUploadFile | null>(null);
+  const [clinicSignatureFile, setClinicSignatureFile] = useState<SelectedUploadFile | null>(null);
 
   const pushToHomeScreen = async () => {
     if (!witness.trim() || !signDate.trim()) {
@@ -64,18 +70,22 @@ const RegisterFinalStepLayout = () => {
 
           <View style={styles.formCard}>
             <Text style={styles.label}>{t("initial_read_sections")}</Text>
-
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("upload_photo")}</Text>
-              <Text style={styles.uploadHint}>Upload initials or acknowledgement</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Upload initials or acknowledgement"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={initialsFile}
+              onChange={setInitialsFile}
+            />
 
             <Text style={styles.label}>{t("member_signature")}</Text>
-
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("upload_photo")}</Text>
-              <Text style={styles.uploadHint}>Member signature image</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Member signature image or PDF"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={memberSignatureFile}
+              onChange={setMemberSignatureFile}
+            />
 
             <FormInput
               placeholder={t("witness")}
@@ -93,10 +103,13 @@ const RegisterFinalStepLayout = () => {
               onChangeText={setClinicSignatureOptional}
             />
 
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("upload_photo")}</Text>
-              <Text style={styles.uploadHint}>Clinic signature if available</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="Clinic signature if available"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={clinicSignatureFile}
+              onChange={setClinicSignatureFile}
+            />
 
             <ButtonForm onPress={pushToHomeScreen} text={t("submit")} />
           </View>

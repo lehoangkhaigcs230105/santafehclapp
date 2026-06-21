@@ -7,6 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
 import ButtonForm from "../../../../components/ButtonForm";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 import {
@@ -33,6 +36,7 @@ const TermLayout = (): React.JSX.Element => {
   const [terminationDate, setTerminationDate] = useState("");
   const [note, setNote] = useState("");
   const [typeQuestion, setTypeQuestion] = useState("");
+  const [supportingFile, setSupportingFile] = useState<SelectedUploadFile | null>(null);
   const [lookupStatus, setLookupStatus] = useState(
     "We will prefill driver and employer details from Firebase where possible."
   );
@@ -218,10 +222,13 @@ const TermLayout = (): React.JSX.Element => {
 
             <FormInput placeholder={t("type_question")} value={typeQuestion} onChangeText={setTypeQuestion} />
 
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("browse_file")}</Text>
-              <Text style={styles.uploadHint}>Attach supporting document if needed</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("browse_file")}
+              hint="Attach supporting document if needed"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={supportingFile}
+              onChange={setSupportingFile}
+            />
 
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.secondaryButton} onPress={handleViewPdf}>

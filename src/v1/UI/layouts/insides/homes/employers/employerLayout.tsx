@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
-  Image,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -17,6 +15,9 @@ import styles from "@/assets/styles/tabStyles/homeStyles/employerStyles/employer
 import ButtonForm from "@/v1/UI/components/ButtonForm";
 import FormInput from "@/v1/UI/components/FormInput";
 import HeaderTabs from "@/v1/UI/components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "@/v1/UI/components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 
@@ -37,6 +38,7 @@ const EmployerLayout = () => {
   const [derFirstName, setDerFirstName] = useState("");
   const [derLastName, setDerLastName] = useState("");
   const [note, setNote] = useState("");
+  const [attachment, setAttachment] = useState<SelectedUploadFile | null>(null);
 
   const submitToFirebase = async () => {
     const user = firebaseAuth.currentUser;
@@ -68,6 +70,9 @@ const EmployerLayout = () => {
         derFirstName: derFirstName.trim(),
         derLastName: derLastName.trim(),
         note: note.trim(),
+        attachmentName: attachment?.name || null,
+        attachmentMimeType: attachment?.mimeType || null,
+        attachmentSize: attachment?.size || null,
         createdAt: serverTimestamp(),
       });
 
@@ -192,15 +197,13 @@ const EmployerLayout = () => {
             />
 
             <Text style={styles.label}>{t("file_upload_optional")}</Text>
-            <TouchableOpacity style={styles.fileUpload}>
-              <Image
-                source={{ uri: "https://img.icons8.com/ios/452/image--v1.png" }}
-                style={styles.fileIcon}
-                resizeMode="contain"
-              />
-              <Text style={styles.fileText}>{t("file_upload_optional")}</Text>
-              <Text style={styles.uploadHint}>Attach supporting letter or logo</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("file_upload_optional")}
+              hint="Attach supporting letter, logo, image, or PDF"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={attachment}
+              onChange={setAttachment}
+            />
 
             <ButtonForm onPress={submitToFirebase} text={t("next")} />
           </View>

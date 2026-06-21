@@ -13,6 +13,9 @@ import { useNavigation } from "@react-navigation/native";
 import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 
 import { StackScreens } from "@/configs/navigations/screens";
 import {
@@ -39,6 +42,7 @@ const RegisterStepTwoLayout = () => {
   const [derLastName, setDerLastName] = useState("");
   const [dateOfEnrollment, setDateOfEnrollment] = useState("");
   const [dateOfExpiration, setDateOfExpiration] = useState("");
+  const [supportingFile, setSupportingFile] = useState<SelectedUploadFile | null>(null);
 
   useEffect(() => {
     const loadEmployerData = async () => {
@@ -230,10 +234,13 @@ const RegisterStepTwoLayout = () => {
             />
 
             <Text style={styles.label}>{t("file_upload_optional")}</Text>
-            <TouchableOpacity style={styles.uploadBox}>
-              <Text style={styles.uploadText}>{t("upload_photo")}</Text>
-              <Text style={styles.uploadHint}>PNG, JPG or PDF</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("upload_photo")}
+              hint="PNG, JPG or PDF"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={supportingFile}
+              onChange={setSupportingFile}
+            />
 
             <ButtonForm onPress={pushToRegisterFinalStep} text={t("next")} />
           </View>

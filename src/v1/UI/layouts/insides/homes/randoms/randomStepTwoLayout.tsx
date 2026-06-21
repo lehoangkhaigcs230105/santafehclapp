@@ -18,6 +18,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
+import UploadPickerField, {
+  SelectedUploadFile,
+} from "../../../../components/UploadPickerField";
 import { StackScreens } from "@/configs/navigations/screens";
 import {
   getEmployerByCompanyName,
@@ -29,13 +32,6 @@ import { getDriverPrefillData } from "@/v1/logics/services/prefillService";
 type RouteParams = {
   company?: string;
   companyCode?: string;
-};
-
-type PickedFileType = {
-  uri: string;
-  name: string;
-  type?: string;
-  size?: number;
 };
 
 const RandomStepTwoLayout = () => {
@@ -56,7 +52,7 @@ const RandomStepTwoLayout = () => {
   const [expireDate, setExpireDate] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [collectionDate, setCollectionDate] = useState("");
-  const [pickedFile, setPickedFile] = useState<PickedFileType | null>(null);
+  const [pickedFile, setPickedFile] = useState<SelectedUploadFile | null>(null);
   const [statusText, setStatusText] = useState(
     "We will prefill driver and company data from Firebase where available."
   );
@@ -154,28 +150,6 @@ const RandomStepTwoLayout = () => {
       clearTimeout(timeout);
     };
   }, [company, companyCode, companyName]);
-
-  const pickFile = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf",
-        copyToCacheDirectory: true,
-      });
-
-      if (result.canceled) return;
-
-      const file = result.assets[0];
-      setPickedFile({
-        uri: file.uri,
-        name: file.name,
-        type: file.mimeType,
-        size: file.size,
-      });
-    } catch (error) {
-      console.error("Random form file pick error:", error);
-      Alert.alert("Error", "Unable to pick a PDF file right now.");
-    }
-  };
 
   const submitForm = async () => {
     const user = firebaseAuth.currentUser;
@@ -324,12 +298,13 @@ const RandomStepTwoLayout = () => {
             />
 
             <Text style={styles.label}>{t("attachment")}</Text>
-            <TouchableOpacity onPress={pickFile} style={styles.uploadBox}>
-              <Text style={styles.uploadText}>
-                {pickedFile ? pickedFile.name : t("pick_pdf_file_optional")}
-              </Text>
-              <Text style={styles.uploadHint}>PDF only, optional</Text>
-            </TouchableOpacity>
+            <UploadPickerField
+              buttonText={t("pick_pdf_file_optional")}
+              hint="PDF or image attachment"
+              allowedTypes={["application/pdf", "image/*"]}
+              file={pickedFile}
+              onChange={setPickedFile}
+            />
 
             <ButtonForm onPress={submitForm} text={t("submit")} />
           </View>
