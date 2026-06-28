@@ -22,7 +22,6 @@ import {
   getEmployerByEmployerCode,
   normalizeEmployerCode,
 } from "@/v1/logics/services/employerService";
-import { getDriverPrefillData } from "@/v1/logics/services/prefillService";
 
 const RenewStepTwoLayout = () => {
   const { t } = useTranslation();
@@ -48,29 +47,6 @@ const RenewStepTwoLayout = () => {
     "Paste the employer code to auto-fill the company details from Firebase."
   );
   const [lookupTone, setLookupTone] = useState<"neutral" | "success" | "warning">("neutral");
-
-  useEffect(() => {
-    let active = true;
-
-    const loadPrefill = async () => {
-      try {
-        const prefill = await getDriverPrefillData();
-        if (!active || !prefill?.employerCode) {
-          return;
-        }
-
-        setCode((current) => current || prefill.employerCode);
-      } catch (error) {
-        console.error("Renew step 2 prefill error:", error);
-      }
-    };
-
-    loadPrefill();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     const normalizedCode = normalizeEmployerCode(code || "");

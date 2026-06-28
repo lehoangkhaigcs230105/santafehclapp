@@ -15,6 +15,7 @@ import SmsLayout from "@/v1/UI/layouts/auths/smsLayout";
 import AdminHomeLayout from "@/v1/UI/layouts/insides/admin/adminHomeLayout";
 import AdminProfileCheckLayout from "@/v1/UI/layouts/insides/admin/adminProfilecheckLayout";
 import AdminCreateSubAccountLayout from "@/v1/UI/layouts/insides/admin/adminCreateSubAccountLayout";
+import AdminManageSubAccountsLayout from "@/v1/UI/layouts/insides/admin/adminManageSubAccountsLayout";
 import SubAdminHomeLayout from "@/v1/UI/layouts/insides/subAdmin/subAdminHomeLayout";
 
 import HomeLayout from "@/v1/UI/layouts/insides/homes/homeLayout";
@@ -204,6 +205,7 @@ export default function StackNavigator() {
         <Stack.Screen name={StackScreens.home} component={AdminHomeLayout} />
         <Stack.Screen name={StackScreens.adminProfileCheck} component={AdminProfileCheckLayout} />
         <Stack.Screen name={StackScreens.adminCreateSubAccount} component={AdminCreateSubAccountLayout} />
+        <Stack.Screen name={StackScreens.adminManageSubAccounts} component={AdminManageSubAccountsLayout} />
         {renderCommonAppScreens(canAccessForm)}
       </Stack.Navigator>
     );

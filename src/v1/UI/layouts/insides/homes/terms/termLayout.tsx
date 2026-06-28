@@ -38,7 +38,7 @@ const TermLayout = (): React.JSX.Element => {
   const [typeQuestion, setTypeQuestion] = useState("");
   const [supportingFile, setSupportingFile] = useState<SelectedUploadFile | null>(null);
   const [lookupStatus, setLookupStatus] = useState(
-    "We will prefill driver and employer details from Firebase where possible."
+    "We will prefill driver details from Firebase. Enter the company code to load employer data."
   );
   const [lookupTone, setLookupTone] = useState<"neutral" | "success" | "warning">("neutral");
 
@@ -52,16 +52,14 @@ const TermLayout = (): React.JSX.Element => {
           return;
         }
 
-        setCompanyCode((current) => current || prefill.employerCode);
-        setCompanyName((current) => current || prefill.companyName);
         setDriverLicenseNumber((current) => current || prefill.driverLicenseNumber || prefill.license);
         setDriverFirstName((current) => current || prefill.driverFirstName);
         setDriverLastName((current) => current || prefill.driverLastName);
         setDriverPhone((current) => current || prefill.driverPhone);
         setRequestBy((current) => current || `${prefill.driverFirstName} ${prefill.driverLastName}`.trim());
 
-        if (prefill.driverFirstName || prefill.employerCode) {
-          setLookupStatus("Driver and employer details were prefilled from your account.");
+        if (prefill.driverFirstName || prefill.driverLicenseNumber || prefill.license) {
+          setLookupStatus("Driver details were prefilled from your account. Enter the company code to load employer data.");
           setLookupTone("success");
         }
       } catch (error) {

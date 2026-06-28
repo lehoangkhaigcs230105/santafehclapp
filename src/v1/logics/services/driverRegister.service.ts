@@ -6,6 +6,7 @@ import {
 } from "firebase/firestore";
 import { db, firebaseAuth } from "../../../../firebase/firebaseConfig";
 import { getEmployerByEmployerCode as lookupEmployerByEmployerCode } from "./employerService";
+import { submitDriverRegisterToJotform } from "./jotformRegister.service";
 
 export type DriverRegisterStepOneData = {
   status: string;
@@ -36,6 +37,12 @@ export type DriverRegisterFinalData = {
   signDate: string;
   clinicSignatureOptional: string;
   completed: boolean;
+};
+
+export type CompleteDriverRegisterResult = {
+  jotformStatus: "submitted" | "queued" | "skipped";
+  jotformSubmitted: boolean;
+  jotformMessage: string;
 };
 
 const getCurrentUid = () => {
@@ -159,7 +166,7 @@ export const updateDriverRegisterStepTwo = async (
 
 export const completeDriverRegister = async (
   data: DriverRegisterFinalData
-) => {
+) : Promise<CompleteDriverRegisterResult> => {
   const uid = getCurrentUid();
   const normalizedData = {
     witness: data.witness.trim(),
@@ -187,6 +194,33 @@ export const completeDriverRegister = async (
     registerCompleted: true,
     registerSubmittedAt: serverTimestamp(),
   });
+
+  const jotformResult = await submitDriverRegisterToJotform(uid);
+
+  return {
+    jotformStatus: jotformResult.submitted
+      ? "submitted"
+      : jotformResult.skipped
+        ? "skipped"
+        : "queued",
+    jotformSubmitted: jotformResult.submitted,
+    jotformMessage: jotformResult.message,
+  };
+};
+
+export const resendDriverRegisterToJotform = async (): Promise<CompleteDriverRegisterResult> => {
+  const uid = getCurrentUid();
+  const jotformResult = await submitDriverRegisterToJotform(uid);
+
+  return {
+    jotformStatus: jotformResult.submitted
+      ? "submitted"
+      : jotformResult.skipped
+        ? "skipped"
+        : "queued",
+    jotformSubmitted: jotformResult.submitted,
+    jotformMessage: jotformResult.message,
+  };
 };
 
 export const getEmployerByEmployerCode = async (employerCode: string) => {

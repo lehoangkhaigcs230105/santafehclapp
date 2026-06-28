@@ -51,6 +51,10 @@ const AdminHomeLayout = (): React.JSX.Element => {
     navigation.navigate(StackScreens.adminCreateSubAccount);
   };
 
+  const goToManageSubAccounts = () => {
+    navigation.navigate(StackScreens.adminManageSubAccounts);
+  };
+
   const goToProfileReview = () => {
     navigation.navigate(StackScreens.adminProfileCheck);
   };
@@ -104,6 +108,23 @@ const AdminHomeLayout = (): React.JSX.Element => {
             <Text style={styles.primaryActionTitle}>Create sub account</Text>
             <Text style={styles.primaryActionText}>
               Add staff and choose exactly which forms they can use.
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={22} color="#ffffff" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={goToManageSubAccounts}
+          style={[styles.primaryAction, { backgroundColor: "#244b64", marginTop: 12, minHeight: 82 }]}
+        >
+          <View style={styles.primaryActionIcon}>
+            <Ionicons name="people-outline" size={24} color="#ffffff" />
+          </View>
+          <View style={styles.primaryActionBody}>
+            <Text style={styles.primaryActionTitle}>Manage sub accounts</Text>
+            <Text style={styles.primaryActionText}>
+              Review staff accounts and update exactly which forms they can access.
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={22} color="#ffffff" />

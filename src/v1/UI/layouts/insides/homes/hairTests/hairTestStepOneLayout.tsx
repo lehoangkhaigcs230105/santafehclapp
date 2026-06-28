@@ -1,5 +1,5 @@
 import styles from "src/assets/styles/tabStyles/homeStyles/hairTestStyles/hairTestStepOne.styles";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View, Alert, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import ButtonForm from "../../../../components/ButtonForm";
 import FormInput from "../../../../components/FormInput";
 import HeaderTabs from "../../../../components/Header";
 import { StackScreens } from "@/configs/navigations/screens";
+import { getDriverPrefillData } from "@/v1/logics/services/prefillService";
 
 const HairTestStepOneLayout = () => {
   const { t } = useTranslation();
@@ -15,6 +16,21 @@ const HairTestStepOneLayout = () => {
   const [plan, setPlan] = useState("");
   const [employerCode, setEmployerCode] = useState("");
   const [license, setLicense] = useState("");
+
+  useEffect(() => {
+    const loadPrefill = async () => {
+      try {
+        const prefill = await getDriverPrefillData();
+        if (!prefill) return;
+
+        setLicense((current) => current || prefill.license || prefill.driverLicenseNumber);
+      } catch (error) {
+        console.error("Hair test step 1 prefill error:", error);
+      }
+    };
+
+    loadPrefill();
+  }, []);
 
   const pushToHairTestStepTwo = () => {
     if (!status.trim() || !plan.trim() || !employerCode.trim() || !license.trim()) {

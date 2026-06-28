@@ -1,0 +1,150 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function currentUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function currentUserExists() {
+      return isSignedIn() && currentUserDoc().data != null;
+    }
+
+    function currentRole() {
+      return currentUserExists() ? currentUserDoc().data.role : null;
+    }
+
+    function isAdmin() {
+      return currentRole() == "admin";
+    }
+
+    function isSubAdmin() {
+      return currentRole() == "subAdmin";
+    }
+
+    function isUserOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isOwnerByUserId() {
+      return isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function isCreatingOwnUserDoc(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isCreatingOwnResource() {
+      return isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function hasParentAdmin() {
+      return request.resource.data.parentAdminId is string
+        && request.resource.data.parentAdminId == request.auth.uid;
+    }
+
+    function isValidRoleCreateForSelf() {
+      return !("role" in request.resource.data)
+        || request.resource.data.role == "user";
+    }
+
+    function isValidSubAdminCreate() {
+      return request.resource.data.role == "subAdmin"
+        && request.resource.data.userRole == "subAdmin"
+        && request.resource.data.accountType == "subAdmin"
+        && request.resource.data.isSubAccount == true
+        && request.resource.data.allowedForms is list
+        && hasParentAdmin();
+    }
+
+    function isAdminCreatingUser(userId) {
+      return isSignedIn()
+        && isAdmin()
+        && request.auth.uid != userId;
+    }
+
+    function canReadEmployer() {
+      return isSignedIn();
+    }
+
+    function canManageRandomForm() {
+      return isSignedIn()
+        && (
+          resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isSubAdmin()
+        );
+    }
+
+    function canCreateRandomForm() {
+      return isSignedIn()
+        && (
+          request.resource.data.userId == request.auth.uid
+          || isAdmin()
+          || isSubAdmin()
+        );
+    }
+
+    match /users/{userId} {
+      allow create:
+        if (
+          isCreatingOwnUserDoc(userId) && isValidRoleCreateForSelf()
+        ) || (
+          isAdminCreatingUser(userId) && isValidSubAdminCreate()
+        );
+
+      allow read:
+        if isUserOwner(userId) || isAdmin();
+
+      allow update:
+        if isUserOwner(userId) || isAdmin();
+
+      allow delete:
+        if isUserOwner(userId) || isAdmin();
+    }
+
+    match /driverregister/{userId} {
+      allow create, read, update, delete:
+        if isUserOwner(userId) || isAdmin();
+    }
+
+    match /employers/{docId} {
+      allow create:
+        if isCreatingOwnResource() || isAdmin();
+
+      allow read:
+        if canReadEmployer();
+
+      allow update, delete:
+        if isOwnerByUserId() || isAdmin();
+    }
+
+    match /randomForms/{docId} {
+      allow create:
+        if canCreateRandomForm();
+
+      allow read, update, delete:
+        if canManageRandomForm();
+    }
+
+    match /companies/{docId} {
+      allow read:
+        if isSignedIn();
+
+      allow create, update, delete:
+        if isAdmin();
+    }
+
+    match /public/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -7,6 +7,7 @@ import {
 } from "react-native-safe-area-context";
 
 import StackNavigator from "@/configs/navigations/StackNavigator";
+import GlobalLanguageSwitcher from "@/v1/UI/components/GlobalLanguageSwitcher";
 import { AlertProvider } from "@/v1/logics/contexts/AlertContext";
 import AuthProvider from "@/v1/logics/contexts/AuthContext";
 import { applySavedLanguage } from "@/v1/logics/services/LanguageService";
@@ -26,6 +27,7 @@ export default function AppNavigator() {
           <AlertProvider>
             <AuthProvider>
               <StackNavigator />
+              <GlobalLanguageSwitcher />
             </AuthProvider>
           </AlertProvider>
         </NavigationContainer>

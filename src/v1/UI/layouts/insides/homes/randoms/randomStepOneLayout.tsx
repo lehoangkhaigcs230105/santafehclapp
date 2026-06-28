@@ -19,7 +19,10 @@ import { useNavigation } from "@react-navigation/native";
 import HeaderTabs from "../../../../components/Header";
 import FormInput from "../../../../components/FormInput";
 import { StackScreens } from "@/configs/navigations/screens";
-import { normalizeEmployerCode } from "@/v1/logics/services/employerService";
+import {
+  getEmployerByCompanyName,
+  normalizeEmployerCode,
+} from "@/v1/logics/services/employerService";
 
 type CompanyType = {
   id: string;
@@ -40,7 +43,7 @@ const RandomStepOneLayout = () => {
       try {
         const snapshot = await getDocs(collection(firestore, "companies"));
 
-        const companies: CompanyType[] = snapshot.docs
+        const baseCompanies = snapshot.docs
           .map((companyDoc) => {
             const data = companyDoc.data();
             const name = String(data.name ?? data.companyName ?? "").trim();
@@ -54,8 +57,32 @@ const RandomStepOneLayout = () => {
               name,
             };
           })
-          .filter((item) => item.name)
-          .sort((a, b) => a.name.localeCompare(b.name));
+          .filter((item) => item.name);
+
+        const companies: CompanyType[] = await Promise.all(
+          baseCompanies.map(async (item) => {
+            if (item.code) {
+              return item;
+            }
+
+            try {
+              const employerData: any = await getEmployerByCompanyName(item.name);
+              const fallbackCode = String(
+                employerData?.employerCode ?? employerData?.code ?? ""
+              ).trim();
+
+              return {
+                ...item,
+                code: fallbackCode ? normalizeEmployerCode(fallbackCode) : "",
+              };
+            } catch (lookupError) {
+              console.error("Random company code enrichment error:", lookupError);
+              return item;
+            }
+          })
+        );
+
+        companies.sort((a, b) => a.name.localeCompare(b.name));
 
         setCompanyList(companies);
       } catch (error) {

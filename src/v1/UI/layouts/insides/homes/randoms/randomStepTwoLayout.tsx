@@ -54,7 +54,7 @@ const RandomStepTwoLayout = () => {
   const [collectionDate, setCollectionDate] = useState("");
   const [pickedFile, setPickedFile] = useState<SelectedUploadFile | null>(null);
   const [statusText, setStatusText] = useState(
-    "We will prefill driver and company data from Firebase where available."
+    "We will prefill driver details from Firebase. Enter the company code to load employer data."
   );
   const [statusTone, setStatusTone] = useState<"neutral" | "success" | "warning">("neutral");
 
@@ -70,16 +70,18 @@ const RandomStepTwoLayout = () => {
         setFirstName((current) => current || prefill.driverFirstName);
         setLastName((current) => current || prefill.driverLastName);
         setCompanyName((current) => current || company || prefill.companyName);
-        setCompanyCode((current) =>
-          current || routeCompanyCode || prefill.employerCode || ""
-        );
+        setCompanyCode((current) => current || routeCompanyCode || "");
 
         setStatusText(
-          prefill.employerCode || prefill.driverFirstName
-            ? "Driver and employer data were prefilled from your account."
+          prefill.driverFirstName || prefill.driverLicenseNumber || prefill.license
+            ? "Driver details were prefilled from your account. Enter the company code to load employer data."
             : "Enter the remaining details to complete this random form."
         );
-        setStatusTone(prefill.employerCode || prefill.driverFirstName ? "success" : "neutral");
+        setStatusTone(
+          prefill.driverFirstName || prefill.driverLicenseNumber || prefill.license
+            ? "success"
+            : "neutral"
+        );
       } catch (error) {
         console.error("Random step 2 prefill error:", error);
       }
@@ -93,46 +95,73 @@ const RandomStepTwoLayout = () => {
   }, [company, routeCompanyCode]);
 
   useEffect(() => {
-    const normalizedCode = normalizeEmployerCode(companyCode || "");
+    const normalizedRouteCode = normalizeEmployerCode(routeCompanyCode || "");
+    const normalizedCurrentCode = normalizeEmployerCode(companyCode || "");
+    const normalizedCompanyName = company.trim();
 
-    if (!normalizedCode && !companyName.trim()) {
+    if (normalizedCurrentCode || normalizedRouteCode || !normalizedCompanyName) {
       return;
     }
 
     let active = true;
-    const timeout = setTimeout(async () => {
+
+    const fillCodeFromSelectedCompany = async () => {
       try {
-        let employerData: any = null;
+        const employerData: any = await getEmployerByCompanyName(normalizedCompanyName);
 
-        if (normalizedCode) {
-          employerData = await getEmployerByEmployerCode(normalizedCode);
+        if (!active || !employerData) {
+          return;
         }
 
-        if (!employerData && companyName.trim()) {
-          employerData = await getEmployerByCompanyName(companyName);
+        const fallbackCode = normalizeEmployerCode(
+          String(employerData.employerCode ?? employerData.code ?? "")
+        );
+
+        if (!fallbackCode) {
+          return;
         }
+
+        setCompanyCode((current) => current || fallbackCode);
+        setCompanyName((current) => current || employerData.companyName || normalizedCompanyName);
+        setStatusText(
+          `Company code ${fallbackCode} was loaded from the company you selected.`
+        );
+        setStatusTone("success");
+      } catch (error) {
+        console.error("Random step 2 selected company code fallback error:", error);
+      }
+    };
+
+    fillCodeFromSelectedCompany();
+
+    return () => {
+      active = false;
+    };
+  }, [company, companyCode, routeCompanyCode]);
+
+  useEffect(() => {
+    const normalizedCode = normalizeEmployerCode(companyCode || "");
+
+    if (!normalizedCode) {
+      return;
+    }
+
+    let active = true;
+      const timeout = setTimeout(async () => {
+        try {
+        const employerData: any = await getEmployerByEmployerCode(normalizedCode);
 
         if (!active) return;
 
         if (employerData) {
           setCompanyName((current) => current || employerData.companyName || company);
-          setCompanyCode((current) =>
-            current || employerData.employerCode || employerData.code || ""
-          );
           setStatusText(
-            employerData.employerCode || employerData.code
-              ? `Company details loaded from Firebase. Code: ${normalizeEmployerCode(String(employerData.employerCode || employerData.code))}`
-              : "Company details loaded from Firebase."
+            `Company details loaded from Firebase for code ${normalizedCode}.`
           );
           setStatusTone("success");
         } else if (normalizedCode) {
           setStatusText(
             `No employer match found for code ${normalizedCode}. You can still submit manually.`
-          );
-          setStatusTone("warning");
-        } else {
-          setStatusText(
-            "This company does not have a code in the companies collection yet. Add companyCode there or employerCode in employers to auto-fill it."
           );
           setStatusTone("warning");
         }
@@ -149,7 +178,7 @@ const RandomStepTwoLayout = () => {
       active = false;
       clearTimeout(timeout);
     };
-  }, [company, companyCode, companyName]);
+  }, [company, companyCode]);
 
   const submitForm = async () => {
     const user = firebaseAuth.currentUser;
